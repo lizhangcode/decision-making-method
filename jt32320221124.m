@@ -1,21 +1,12 @@
-%%%%%%%第一套算法
+%%%%%%% decision-making algorithm
 clc
 clear
-%%%%%%%A1和A2为原始输入隶属度和非隶属度
-  A1=[0.82   0.28    0.77   1     0.12;
-     0.9    0.55    0.75    1      0.5;
-    0.13    0.96    1      0.28   0.96;
-    0.63    0.95    1      0.68   0.34;
-    0.91    1       0.45   0.66   0.69;     
-    0.9    0.48     1      0.99   1];
+%%%%%%% A1 and A2 represent the membership degrades and nonmembership degrades, repectively.
+  A1=[   ];
 
-A2=[0.11    0.70    0.23   0      0.8;
-    0.1     0.43    0.2    0       0.4;
-    0.72    0.04     0     0.6    0.04;
-    0.22    0.05     0     0.3    0.5;
-    0.05    0        0.55  0.22   0.31;
-    0.1    0.5       0     0      0];
-%%%%%%%变精度的隶属和非隶属
+  A2=[  ];
+  
+%%%%%%% The values of two thresholds
 vv1=0.9;
 vv2=0.1;
 vv3=0.45;
@@ -36,7 +27,7 @@ for i=1:m
         a11=min(aa1);a22=max(aa2);
         aaa1=[aaa1;a11];aaa2=[aaa2;a22];
     end
-    aaaa1=[aaaa1;aaa1'];aaaa2=[aaaa2;aaa2'];%%%%aaaa1是邻域的隶属度，aaaa2是邻域的非隶属度。。
+    aaaa1=[aaaa1;aaa1'];aaaa2=[aaaa2;aaa2']; 
 end
 C1=[];C2=[];C3=[];C4=[];
 for ii=1:m
@@ -44,8 +35,8 @@ for ii=1:m
     for jj=1:n
         c1=max(A1(ii,jj),vv1);
         c2=min(A2(ii,jj),vv2);
-        c3=min(A1(ii,jj),vv3);%这里应该是B3
-        c4=max(A2(ii,jj),vv4);%这里应该是B4
+        c3=min(A1(ii,jj),vv3); 
+        c4=max(A2(ii,jj),vv4); 
         c11=[c11;c1];c22=[c22;c2];c33=[c33;c3];c44=[c44;c4];
     end
     C1=[C1;c11'];C2=[C2;c22'];C3=[C3;c33'];C4=[C4;c44'];
@@ -74,7 +65,7 @@ for oo=1:mc
         dd4=min(min(B4));
         d44=[d44;dd4];
     end
-    D1=[D1,d11];D2=[D2,d22];D3=[D3,d33];D4=[D4,d44];%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  D1和D2是下近似，D3和D4是上近似
+    D1=[D1,d11];D2=[D2,d22];D3=[D3,d33];D4=[D4,d44]; 
 end
 D1=D1';D2=D2';D3=D3';D4=D4';
 [md,nd]=size(D1);
@@ -100,10 +91,10 @@ for e1=1:md
         eee6=max(max(EE4));
         E44=[E44,eee6];
     end
-    E1=[E1;E11];E2=[E2;E22];E3=[E3;E33];E4=[E4;E44];%%%%E1是下近视的隶属度，E2时非隶属度；E3是上近视的隶属度，E4是非隶属度
+    E1=[E1;E11];E2=[E2;E22];E3=[E3;E33];E4=[E4;E44]; 
 end
-F1=E1+E3-E1.*E3;%%%%上下近似聚合的隶属度
-F2=E2.*E4;%%%%%%%%%非隶属度
+F1=E1+E3-E1.*E3; 
+F2=E2.*E4; 
 [mf,nf]=size(F1);
 G1=[];G2=[];
 for g1=1:mf
@@ -115,7 +106,7 @@ for g1=1:mf
     end
        G1=[G1;G11];  
 end
-p1=0.5;%偏好函数的值
+p1=0.5;% The value of preference 
 [mg,ng]=size(G1);
 H=[];
 for h1=1:mg
@@ -128,9 +119,9 @@ for h1=1:mg
         end
         H1=[H1,h11];
     end
-    H=[H;H1];%%%%%%%%
+    H=[H;H1]; 
 end
-%以下是五个偏好矩阵，PD是隶属度，pd是非隶属度
+
 PD1=H(1:6,1:6);
 PD2=H(7:12,1:6);
 PD3=H(13:18,1:6);
@@ -157,7 +148,7 @@ pd2=PD2';
 pd3=PD3';
 pd4=PD4';
 pd5=PD5';
-W=[0.11 0.24 0.30 0.24 0.11];
+W=[0.11 0.24 0.30 0.24 0.11]; % The weight vector of 5 attributes
 [mk,nk]=size(PD1);
 lg=ones(mk,nk);
 KK1=[];KK2=[];
@@ -179,17 +170,17 @@ R2=cumprod(KK2,2);R4=cumprod(KK2);
 Rr2=R2(:,end);Rr4=R4(end,:);
 [mr,nr]=size(Rr1);
 TT=ones(mr,nr);
-T1=TT-(TT-Rr1).^(0.2);%%%正流量的隶属度
-T2=(Rr2).^(0.2);%%%%%%正的非隶属度
-T3=TT-(TT-Rr3').^(0.2);%%%%%负的隶属度
-T4=(Rr4').^(0.2);%%%%%%%%负的非隶属度
-TT1=max(T1);TT2=min(T2);%%%%%%%%%%正流量的正理想点的隶属度和非隶属度
-TT3=min(T3);TT4=max(T4);%%%%%%%%%%负流量的负理想点的隶属度和非隶属度
-Z1=sqrt(0.5*((T1-TT1.*TT).^2+(T2-TT2.*TT).^2+0.5*((T1+T2)-(TT1+TT2).*TT).^2));%%%%%正理想距离
-Z2=sqrt(0.5*((T3-TT3.*TT).^2+(T4-TT4.*TT).^2+0.5*((T3+T4)-(TT3+TT4).*TT).^2));%%%%%负理想距离
-ZZ1=Z2./(Z1+Z2);%%%%%贴近程度
+T1=TT-(TT-Rr1).^(0.2); 
+T2=(Rr2).^(0.2); 
+T3=TT-(TT-Rr3').^(0.2); 
+T4=(Rr4').^(0.2); 
+TT1=max(T1);TT2=min(T2); 
+TT3=min(T3);TT4=max(T4); 
+Z1=sqrt(0.5*((T1-TT1.*TT).^2+(T2-TT2.*TT).^2+0.5*((T1+T2)-(TT1+TT2).*TT).^2)); 
+Z2=sqrt(0.5*((T3-TT3.*TT).^2+(T4-TT4.*TT).^2+0.5*((T3+T4)-(TT3+TT4).*TT).^2)); 
+ZZ1=Z2./(Z1+Z2); 
 A=ZZ1'
-[qn,wn]=sort(A,'descend')
+[qn,wn]=sort(A,'descend') % The ranking order of alternatives
 
 
 
